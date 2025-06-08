@@ -1,6 +1,6 @@
 // Carregar as variáveis de ambiente
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
+
 
 // Importat as bibliotecas necessárias
 const axios = require('axios');
@@ -14,8 +14,17 @@ async function tracaArmazenaClima() {
         console.log(`Buscando clima para a cidade: ${cidade}`);
         const response = await axios.get(url);
         const clima = response.data;
-        console.log(`Clima atual em ${cidade}: ${clima.weather[0].description}`);
+        const dadosRecebidos={
+            cidade: clima.name,
+            temperatura: clima.main.temp,
+            umidade: clima.main.humidity,
+            sensacao_termica: clima.main.feels_like,
+            data: new Date().toISOString(),
+            id: clima.id  
+        }
+        console.log('Dados recebidos:', dadosRecebidos);
     }catch (error) {
         console.error('Erro ao buscar clima:', error.message);
     }
 }
+tracaArmazenaClima();
