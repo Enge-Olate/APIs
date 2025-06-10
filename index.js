@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // Importat as bibliotecas necessárias
 const axios = require('axios');
-const {Poll} = require('pg');
+const {Pool, ClientBase} = require('pg');
 
 async function tracaArmazenaClima() {
     try{
@@ -22,6 +22,22 @@ async function tracaArmazenaClima() {
             data: new Date().toISOString(),
             id: clima.id  
         }
+        const poll = new Pool({
+            user:process.env.DATA_USER,
+            host: process.env.DATA_HOST,
+            database: process.env.DATABASE,
+            port: process.env.DATA_PORT,
+            password: process.env.PASSWORD
+        });
+        poll.connect((err, client, done)=>{
+            if (err){
+                console.error('Erro ao conectar com o SGBD: ', err.stack);
+            }else{
+                console.log('Você está conectado:');
+                 client.release();
+            }
+        })
+        
         console.log('Dados recebidos:', dadosRecebidos);
     }catch (error) {
         console.error('Erro ao buscar clima:', error.message);
