@@ -16,6 +16,9 @@ cd api_climatico
 npm init
 ```
 
+## Adendo
+Foi utilizei o SGBD postgreSql para persistência dos dados.
+
 ## Uso
 
 ```bash
