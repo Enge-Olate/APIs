@@ -17,14 +17,15 @@ npm init
 ```
 
 ## Adendo
-Foi utilizei o SGBD postgreSql para persistência dos dados.
+Foi utilizei o SGBD PostgreSql para persistência dos dados.
 
 ## Uso
 
 ```bash
 node index.html
 ```
-
+## Branch 
+Ramo 'API_windows', para desenvolvimento em OS Windows.
 
 ## Contribuição
 
