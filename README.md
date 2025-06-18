@@ -15,9 +15,10 @@ git clone https://github.com/tu_usuario/api_climatico.git
 cd api_climatico
 npm init
 ```
+obs: clone a branch que lhe convém.
 
 ## Adendo
-Foi utilizei o SGBD postgreSql para persistência dos dados.
+Foi utilizado o SGBD postgreSql para persistência dos dados.
 
 ## Uso
 
