@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // Importat as bibliotecas necessárias
 const axios = require('axios');
-const {Poll} = require('pg');
+const {Pool} = require('pg');
 
 async function tracaArmazenaClima() {
     try{
@@ -23,6 +23,20 @@ async function tracaArmazenaClima() {
             id: clima.id  
         }
         console.log('Dados recebidos:', dadosRecebidos);
+        const pool = new Pool({
+            user:process.env.DB_USER,
+            host:process.env.DB_HOST,
+            database:process.env.DB_DATABASE,
+            port:process.env.DB_PORT,
+            password:process.env.PASSWORD
+        });
+        pool.connect(async (err, client, done) => {
+            err? console.log('Não conectado!'):
+            console.log("Conectado!");
+            client.release();
+            pool.end();
+        })
+        
     }catch (error) {
         console.error('Erro ao buscar clima:', error.message);
     }

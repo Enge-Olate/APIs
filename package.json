@@ -1,17 +1,25 @@
 {
   "name": "api_climatico",
   "version": "1.0.0",
-  "description": "",
+  "description": "Repositório para trabalhar com uma API de meteorologia.",
+  "keywords": [],
+  "homepage": "https://github.com/Enge-Olate/APIs#readme",
+  "bugs": {
+    "url": "https://github.com/Enge-Olate/APIs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enge-Olate/APIs.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "dotenv": "^16.5.0",
     "pg": "^8.16.0"
   }
