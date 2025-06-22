@@ -70,7 +70,7 @@ async function clima_regiao(params) {
     'Itajubá',
     'Santa Rita do Sapucaí',
     'Pouso Alegre',
-    'Sâo Paulo'
+    'São Paulo'
   ]
   for(const cidade of cidades){
     await tracaArmazenaClima(cidade);
