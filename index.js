@@ -5,9 +5,9 @@ require("dotenv").config();
 const axios = require("axios");
 const { Pool, ClientBase } = require("pg");
 
-async function tracaArmazenaClima() {
+async function tracaArmazenaClima(cidade) {
   try {
-    const cidade = "Piranguinho";
+    
     const apikey = process.env.API_KEY;
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=${apikey}&lang=pt_br&units=metric`;
     console.log(`Buscando clima para a cidade: ${cidade}`);
@@ -19,7 +19,7 @@ async function tracaArmazenaClima() {
       umidade: clima.main.humidity,
       sensacao_termica: clima.main.feels_like,
       data: new Date().toISOString(),
-      id: clima.id,
+    
     };
     const poll = new Pool({
       user: process.env.DATA_USER,
@@ -35,15 +35,14 @@ async function tracaArmazenaClima() {
         console.log("Você está conectado:");
         try {
           await client.query(
-            `INSERT INTO clima (cidade, temperatura, umidade, sensacao_termica, data, id_cidade)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+            `INSERT INTO clima (cidade, temperatura, umidade, sensacao_termica, data)
+         VALUES ($1, $2, $3, $4, $5)`,
             [
               dadosRecebidos.cidade,
               dadosRecebidos.temperatura,
               dadosRecebidos.umidade,
               dadosRecebidos.sensacao_termica,
               dadosRecebidos.data,
-              dadosRecebidos.id,
             ]
           );
 
@@ -64,4 +63,18 @@ async function tracaArmazenaClima() {
     console.error("Erro ao buscar clima:", error.message);
   }
 }
-tracaArmazenaClima();
+
+async function clima_regiao(params) {
+  const cidades = [
+    'Varginha',
+    'Itajubá',
+    'Santa Rita do Sapucaí',
+    'Pouso Alegre',
+    'Sâo Paulo'
+  ]
+  for(const cidade of cidades){
+    await tracaArmazenaClima(cidade);
+  }
+}
+
+clima_regiao();
