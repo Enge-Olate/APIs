@@ -1,69 +1,77 @@
-// Carregar as variáveis de ambiente
-require('dotenv').config();
+const db = require("./db");
+const weatherService = require("./weatherService");
 
+async function testConnection(params) {
+  try {
+    console.log("A tentar conexão...");
+    const results = await db.Query("select now() as hora_atual");
+    console.log(
+      "Conexão bem sucedida! Hora do servidor de dados: ",
+      results.rows[0].hora_atual
+    );
+  } catch (error) {
+    console.error("Erro ao se conectar: ", error);
+  }
+}
 
-// Importat as bibliotecas necessárias
-const axios = require('axios');
-const { Pool } = require('pg');
-
-async function tracaArmazenaClima(cidade) {
-    try {
-
-        const apikey = process.env.API_KEY;
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=${apikey}&lang=pt_br&units=metric`;
-        console.log(`Buscando clima para a cidade: ${cidade}`);
-        const response = await axios.get(url);
-        const clima = response.data;
-        const dadosRecebidos = {
-            cidade: clima.name,
-            temperatura: clima.main.temp,
-            umidade: clima.main.humidity,
-            sensacao_termica: clima.main.feels_like,
-            data: new Date().toISOString(),
-
-        }
-        console.log('Dados recebidos:', dadosRecebidos);
-        const pool = new Pool({
-            user: process.env.DB_USER,
-            host: process.env.DB_HOST,
-            database: process.env.DB_DATABASE,
-            port: process.env.DB_PORT,
-            password: process.env.PASSWORD
-        });
-        let inseri_dados = await pool.query(
-            'insert into clima values($1, $2, $3, $4, $5);',
-            [
-                dadosRecebidos.cidade,
-                dadosRecebidos.temperatura,
-                dadosRecebidos.umidade,
-                dadosRecebidos.sensacao_termica,
-                dadosRecebidos.data
-            ]
+async function CreateTable(params) {
+    const table =`
+        create table if not exists clima(
+            id serial primary key,
+            cidade varchar(100) not null,
+            temperatura decimal(2,1) not null,
+            descricao varchar(255) not null,
+            data_registro timestamp default current_timestamp
         );
-        console.log("Dados inseridos com sucesso!", inseri_dados);
-        pool.connect(async (err, client, done) => {
-            err ? console.log('Não conectado!') :
-                console.log("Conectado!");
-            client.release();
-            pool.end();
-        })
-        // let mostra_bd = await pool.query('select * from clima;');
-        // console.log(mostra_bd);
+    
+    `;
+  try {
+    await db.Query(table);
+    console.log('Tabela criada e verificada!\n');
+  } catch (error) {
+    console.error('Erro:', error.message);
+    throw error;
+  }
+}
+async function getClima(nameCity) {
+  console.log("A procurar situação climática para : ", nameCity);
+  try {
+    const weather = await weatherService.getClima(nameCity);
+    console.log("Relatório meteorológico");
+    console.log(`Local: ${weather.cidade}`);
+    console.log(`Temperatura: ${weather.temperatura}°C`);
+    console.log(`Condição climática: ${weather.descricao}`);
+    // console.log(`Humidade: ${weather.humidade}%`);
 
-    } catch (error) {
-        console.error('Erro ao buscar clima:', error.message);
-    }
+    const insertQuery = `
+        insert into clima(
+            cidade, temperatura, descricao
+        )values(
+            $1, $2, $3
+        )returning id;
+    `;
+    const valores = [weather.cidade, weather.temperatura, weather.descricao];
+    const results = await db.Query(insertQuery, valores);
+    console.log(`Dado inseridos, id do registro: ${results.rows[0].id}\n`);
+  } catch (error) {
+    console.error("Erro: ", error.message);
+  }
 }
+
 async function itera_cidades(params) {
-    const cidades = [
-        "Santa Rita do Sapucaí",
-        "Varginha",
-        "Itajubá",
-        "Pouso Alegre",
-        "Maria da Fé"
-    ];
-    for (const cidade of cidades) {
-        await tracaArmazenaClima(cidade);
-    }
+  const cidades = [
+    "Santa Rita do Sapucaí",
+    "Varginha",
+    "Itajubá",
+    "Pouso Alegre",
+    "Maria da Fé",
+  ];
+  for (const cidade of cidades) {
+    await getClima(cidade);
+  }
 }
-itera_cidades();
+(async ()=>{
+    await testConnection();
+    await CreateTable();
+    await itera_cidades();
+})();
