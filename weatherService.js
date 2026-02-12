@@ -3,7 +3,7 @@ require('dotenv').config();
 
 async function getClima(cidade) {
     try {
-        const url = `${process.env.WEATHER_API_URL}?q=${cidade}&appid=${process.env.WEATHER_API_KEY}&lang=pt_br&units=metric`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=${process.env.API_KEY}&lang=pt_br&units=metric`;
         const response = await axios.get(url);
         const setDados ={
             cidade: response.data.name,
@@ -15,7 +15,7 @@ async function getClima(cidade) {
     } catch (error) {
         if(error.response){
             if (error.response.status === 404) {
-                throw new Error(`Cidade ${cidade} não encontrada.`);
+                throw new Error(`Cidade de ${cidade} não encontrada.`);
             }
             if (error.response.status === 401) {
                 throw new Error('Erro de autorização, verifique sua chave API.');

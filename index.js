@@ -21,6 +21,7 @@ async function CreateTable(params) {
             cidade varchar(100) not null,
             temperatura decimal(2,1) not null,
             descricao varchar(255) not null,
+            humidade numeric(3,1) not null,
             data_registro timestamp default current_timestamp
         );
     
@@ -37,22 +38,17 @@ async function getClima(nameCity) {
   console.log("A procurar situação climática para : ", nameCity);
   try {
     const weather = await weatherService.getClima(nameCity);
-    console.log("Relatório meteorológico");
-    console.log(`Local: ${weather.cidade}`);
-    console.log(`Temperatura: ${weather.temperatura}°C`);
-    console.log(`Condição climática: ${weather.descricao}`);
-    // console.log(`Humidade: ${weather.humidade}%`);
 
     const insertQuery = `
         insert into clima(
-            cidade, temperatura, descricao
+            cidade, temperatura, descricao, humidade
         )values(
-            $1, $2, $3
+            $1, $2, $3, $4
         )returning id;
     `;
-    const valores = [weather.cidade, weather.temperatura, weather.descricao];
+    const valores = [weather.cidade, weather.temperatura, weather.descricao, weather.humidade];
     const results = await db.Query(insertQuery, valores);
-    console.log(`Dado inseridos, id do registro: ${results.rows[0].id}\n`);
+    console.log(`Dados inseridos, id do registro: ${results.rows[0].id}\n`);
   } catch (error) {
     console.error("Erro: ", error.message);
   }
