@@ -19,9 +19,9 @@ async function CreateTable(params) {
         create table if not exists clima(
             id serial primary key,
             cidade varchar(100) not null,
-            temperatura decimal(2,1) not null,
+            temperatura numeric(4,1) not null,
             descricao varchar(255) not null,
-            humidade numeric(3,1) not null,
+            humidade numeric(4,1) not null,
             data_registro timestamp default current_timestamp
         );
     
